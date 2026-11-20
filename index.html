@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мое Mini App</title>
+    <!-- 1. Подключаем SDK Telegram -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: var(--tg-theme-bg-color, #f4f4f5); /* Цвет фона Telegram */
+            color: var(--tg-theme-text-color, #000);
+            text-align: center; 
+            padding: 20px; 
+            transition: background 0.3s;
+        }
+        .card { 
+            background: var(--tg-theme-secondary-bg-color, #ffffff); 
+            border-radius: 16px; 
+            padding: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            max-width: 300px; 
+            margin: 0 auto; 
+        }
+        .image-placeholder { 
+            width: 100px; height: 100px; 
+            background: #e0e0e0; 
+            border-radius: 50%; 
+            margin: 0 auto 15px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 40px; 
+        }
+        button { 
+            background: var(--tg-theme-button-color, #2481cc); 
+            color: var(--tg-theme-button-text-color, #ffffff); 
+            border: none; 
+            padding: 14px; 
+            border-radius: 10px; 
+            width: 100%; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer;
+        }
+        button:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <h1>Мое приложение</h1>
+    <div class="card">
+        <div class="image-placeholder">☕</div>
+        <h2>Капучино</h2>
+        <p>Нежный вкус и идеальная пенка</p>
+        <button id="order-btn">Заказать за 200 ₽</button>
+    </div>
+
+    <!-- 2. Пишем логику -->
+    <script>
+        // Инициализируем Telegram
+        const tg = window.Telegram.WebApp;
+        
+        // Говорим Telegram, что приложение готово
+        if (tg) {
+            tg.ready(); 
+            tg.expand(); // Разворачиваем на весь экран
+        }
+
+        // Ловим клик по кнопке
+        document.getElementById('order-btn').addEventListener('click', () => {
+            if (tg) {
+                // Показываем нативное всплывающее окно Telegram
+                tg.showAlert('Отличный выбор! Кофе добавлен в корзину.');
+                // Делаем вибрацию (если телефон поддерживает)
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                alert('Привет из браузера!');
+            }
+        });
+    </script>
+</body>
+</html>
