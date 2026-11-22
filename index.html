@@ -24,7 +24,10 @@
 </head>
 <body>
     <h1>☕ Меню кофейни</h1>
+    
+    <!-- Сюда скрипт добавляет карточки товаров -->
     <div class="catalog" id="catalog"></div>
+    
     <div class="cart">
         <h3>Ваш заказ: <span id="total-price">0</span> ₽</h3>
         <input type="text" id="client-name" placeholder="Ваше имя">
@@ -37,10 +40,10 @@
         tg.ready();
         tg.expand();
 
-        // Вставлены твои реальные данные
         const BOT_TOKEN = "8717110711:AAEYx8S8dnn6103TmdT8xh2SEaGPgAw71Ao";
         const MY_CHAT_ID = "7948923802";
 
+        // Список товаров
         const products = [
             { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, emoji: "☕" },
             { id: 2, name: "Круассан", desc: "С маслом", price: 150, emoji: "🥐" },
@@ -52,6 +55,7 @@
 
         const catalogDiv = document.getElementById('catalog');
         
+        // Отрисовка товаров
         products.forEach(product => {
             const card = document.createElement('div');
             card.className = 'card';
@@ -71,6 +75,7 @@
             catalogDiv.appendChild(card);
         });
 
+        // Добавление в корзину
         window.addToCart = function(id) {
             const product = products.find(p => p.id === id);
             cartTotal += product.price;
@@ -79,6 +84,7 @@
             if (tg) tg.HapticFeedback.impactOccurred('light');
         };
 
+        // Оформление заказа
         document.getElementById('checkout-btn').addEventListener('click', () => {
             if (cartTotal === 0) {
                 if (tg) tg.showAlert('Вы ничего не выбрали!');
@@ -108,7 +114,7 @@
                         document.getElementById('client-name').value = '';
                         document.getElementById('client-phone').value = '';
                     } else {
-                        if (tg) tg.showAlert('Ошибка при отправке. Проверьте токен.');
+                        if (tg) tg.showAlert('Ошибка при отправке.');
                     }
                 })
                 .catch(error => {
