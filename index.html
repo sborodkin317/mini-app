@@ -4,77 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мое Mini App</title>
-    <!-- 1. Подключаем SDK Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <style>
         body { 
-            font-family: sans-serif; 
-            background: var(--tg-theme-bg-color, #f4f4f5); /* Цвет фона Telegram */
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: var(--tg-theme-bg-color, #f4f4f5); 
             color: var(--tg-theme-text-color, #000);
-            text-align: center; 
-            padding: 20px; 
-            transition: background 0.3s;
+            padding: 15px; 
+            margin: 0;
         }
+        h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
+        .catalog { display: flex; flex-direction: column; gap: 15px; }
         .card { 
             background: var(--tg-theme-secondary-bg-color, #ffffff); 
-            border-radius: 16px; 
-            padding: 20px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-            max-width: 300px; 
-            margin: 0 auto; 
+            border-radius: 14px; 
+            padding: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
         }
-        .image-placeholder { 
-            width: 100px; height: 100px; 
-            background: #e0e0e0; 
-            border-radius: 50%; 
-            margin: 0 auto 15px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 40px; 
-        }
-        button { 
+        .info { display: flex; align-items: center; gap: 15px; }
+        .emoji { font-size: 35px; }
+        .details h3 { margin: 0; font-size: 16px; }
+        .details p { margin: 4px 0 0; font-size: 13px; color: #888; }
+        .price { font-weight: bold; font-size: 15px; margin-right: 10px; }
+        .add-btn { 
             background: var(--tg-theme-button-color, #2481cc); 
-            color: var(--tg-theme-button-text-color, #ffffff); 
+            color: var(--tg-theme-button-text-color, #fff); 
             border: none; 
-            padding: 14px; 
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cart { 
+            margin-top: 25px; 
+            background: var(--tg-theme-secondary-bg-color, #ffffff); 
+            border-radius: 14px; 
+            padding: 20px; 
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .checkout-btn { 
+            background: var(--tg-theme-button-color, #34C759); 
+            color: white; 
+            border: none; 
+            padding: 15px; 
             border-radius: 10px; 
             width: 100%; 
             font-size: 16px; 
             font-weight: bold; 
-            cursor: pointer;
+            margin-top: 15px;
         }
-        button:active { opacity: 0.8; }
     </style>
 </head>
 <body>
-    <h1>Мое приложение</h1>
-    <div class="card">
-        <div class="image-placeholder">☕</div>
-        <h2>Капучино</h2>
-        <p>Нежный вкус и идеальная пенка</p>
-        <button id="order-btn">Заказать за 200 ₽</button>
+    <h1>☕ Меню кофейни</h1>
+
+    <div class="catalog" id="catalog">
+        <!-- Товары будут добавляться сюда через JS -->
     </div>
 
-    <!-- 2. Пишем логику -->
-    <script>
-        // Инициализируем Telegram
-        const tg = window.Telegram.WebApp;
-        
-        // Говорим Telegram, что приложение готово
-        if (tg) {
-            tg.ready(); 
-            tg.expand(); // Разворачиваем на весь экран
-        }
+    <div class="cart">
+        <h3>Ваш заказ: <span id="total-price">0</span> ₽</h3>
+        <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
+    </div>
 
-        // Ловим клик по кнопке
-        document.getElementById('order-btn').addEventListener('click', () => {
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // 1. Наш список товаров (в будущем это будет приходить из базы данных)
+        const products = [
+            { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, emoji: "☕" },
+            { id: 2, name: "Круассан", desc: "С маслом", price: 150, emoji: "🥐" },
+            { id: 3, name: "Латте", desc: "С сиропом", price: 250, emoji: "🥛" }
+        ];
+
+        let cartTotal = 0;
+
+        // 2. Отрисовываем карточки на экране
+        const catalogDiv = document.getElementById('catalog');
+        
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="info">
+                    <div class="emoji">${product.emoji}</div>
+                    <div class="details">
+                        <h3>${product.name}</h3>
+                        <p>${product.desc}</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="price">${product.price} ₽</div>
+                    <button class="add-btn" onclick="addToCart(${product.price})">+</button>
+                </div>
+            `;
+            catalogDiv.appendChild(card);
+        });
+
+        // 3. Логика добавления в корзину
+        window.addToCart = function(price) {
+            cartTotal += price;
+            document.getElementById('total-price').innerText = cartTotal;
+            if (tg) tg.HapticFeedback.impactOccurred('light'); // Легкая вибрация
+        };
+
+        // 4. Оформление заказа
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            if (cartTotal === 0) {
+                if (tg) tg.showAlert('Вы ничего не выбрали!');
+                return;
+            }
             if (tg) {
-                // Показываем нативное всплывающее окно Telegram
-                tg.showAlert('Отличный выбор! Кофе добавлен в корзину.');
-                // Делаем вибрацию (если телефон поддерживает)
+                tg.showAlert(`Заказ на сумму ${cartTotal} ₽ оформлен! (В будущем это улетит в бот владельцу)`);
                 tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                alert('Привет из браузера!');
+                // Сбрасываем корзину
+                cartTotal = 0;
+                document.getElementById('total-price').innerText = cartTotal;
             }
         });
     </script>
