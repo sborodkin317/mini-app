@@ -6,85 +6,29 @@
     <title>Мое Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: var(--tg-theme-bg-color, #f4f4f5); 
-            color: var(--tg-theme-text-color, #000);
-            padding: 15px; 
-            margin: 0;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--tg-theme-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); padding: 15px; margin: 0; }
         h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
         .catalog { display: flex; flex-direction: column; gap: 15px; }
-        .card { 
-            background: var(--tg-theme-secondary-bg-color, #ffffff); 
-            border-radius: 14px; 
-            padding: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-        }
+        .card { background: var(--tg-theme-secondary-bg-color, #ffffff); border-radius: 14px; padding: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .info { display: flex; align-items: center; gap: 15px; }
         .emoji { font-size: 35px; }
         .details h3 { margin: 0; font-size: 16px; }
         .details p { margin: 4px 0 0; font-size: 13px; color: #888; }
         .price { font-weight: bold; font-size: 15px; margin-right: 10px; }
-        .add-btn { 
-            background: var(--tg-theme-button-color, #2481cc); 
-            color: var(--tg-theme-button-text-color, #fff); 
-            border: none; 
-            border-radius: 50%;
-            width: 35px; height: 35px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        
-        .cart { 
-            margin-top: 25px; 
-            background: var(--tg-theme-secondary-bg-color, #ffffff); 
-            border-radius: 14px; 
-            padding: 20px; 
-        }
+        .add-btn { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 20px; cursor: pointer; }
+        .cart { margin-top: 25px; background: var(--tg-theme-secondary-bg-color, #ffffff); border-radius: 14px; padding: 20px; }
         .cart h3 { margin-top: 0; text-align: center; }
-        
-        /* Поля ввода */
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(128, 128, 128, 0.2);
-            background: var(--tg-theme-bg-color, #f4f4f5);
-            color: var(--tg-theme-text-color, #000);
-            box-sizing: border-box;
-            font-size: 15px;
-        }
-
-        .checkout-btn { 
-            background: var(--tg-theme-button-color, #2481cc); 
-            color: var(--tg-theme-button-text-color, #fff); 
-            border: none; 
-            padding: 15px; 
-            border-radius: 10px; 
-            width: 100%; 
-            font-size: 16px; 
-            font-weight: bold; 
-            margin-top: 10px;
-        }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(128, 128, 128, 0.2); background: var(--tg-theme-bg-color, #f4f4f5); color: var(--tg-theme-text-color, #000); box-sizing: border-box; font-size: 15px; }
+        .checkout-btn { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
     <h1>☕ Меню кофейни</h1>
-
     <div class="catalog" id="catalog"></div>
-
     <div class="cart">
         <h3>Ваш заказ: <span id="total-price">0</span> ₽</h3>
-        
-        <!-- Поля для ввода -->
         <input type="text" id="client-name" placeholder="Ваше имя">
         <input type="tel" id="client-phone" placeholder="Телефон или столик">
-        
         <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
     </div>
 
@@ -93,6 +37,10 @@
         tg.ready();
         tg.expand();
 
+        // ⚠️ ВСТАВЬ СЮДА СВОИ ДАННЫЕ ИЗ ШАГА 1 ⚠️
+        const BOT_TOKEN = 8717110711:AAEYx8S8dnn6103TmdT8xh2SEaGPgAw71Ao
+        const MY_CHAT_ID = 7948923802
+
         const products = [
             { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, emoji: "☕" },
             { id: 2, name: "Круассан", desc: "С маслом", price: 150, emoji: "🥐" },
@@ -100,7 +48,7 @@
         ];
 
         let cartTotal = 0;
-        let cartItems = []; // Здесь будем хранить названия заказанных товаров
+        let cartItems = []; 
 
         const catalogDiv = document.getElementById('catalog');
         
@@ -145,20 +93,29 @@
                 return;
             }
 
-            // Здесь мы формируем текст заказа
-            const orderText = `Заказ для: ${name}\nКонтакт: ${phone}\n\nСостав: ${cartItems.join(', ')}\nИтого: ${cartTotal} ₽`;
+            const orderText = `🔥 НОВЫЙ ЗАКАЗ!\n\n👤 Имя: ${name}\n📞 Контакт: ${phone}\n\n🍔 Состав: ${cartItems.join(', ')}\n💰 Итого: ${cartTotal} ₽`;
 
-            if (tg) {
-                tg.showAlert(orderText + '\n\n(В будущем этот текст прилетит вам в бот!)');
-                tg.HapticFeedback.notificationOccurred('success');
-                
-                // Сбрасываем после заказа
-                cartTotal = 0;
-                cartItems = [];
-                document.getElementById('total-price').innerText = cartTotal;
-                document.getElementById('client-name').value = '';
-                document.getElementById('client-phone').value = '';
-            }
+            // Отправляем сообщение в Telegram
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_CHAT_ID}&text=${encodeURIComponent(orderText)}`;
+
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        if (tg) tg.showAlert('Заказ успешно отправлен! Мы скоро свяжемся.');
+                        tg.HapticFeedback.notificationOccurred('success');
+                        // Сбрасываем
+                        cartTotal = 0;
+                        cartItems = [];
+                        document.getElementById('total-price').innerText = cartTotal;
+                        document.getElementById('client-name').value = '';
+                        document.getElementById('client-phone').value = '';
+                    } else {
+                        if (tg) tg.showAlert('Ошибка при отправке. Проверьте токен.');
+                    }
+                })
+                .catch(error => {
+                    if (tg) tg.showAlert('Ошибка сети. Попробуйте позже.');
+                });
         });
     </script>
 </body>
