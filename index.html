@@ -3,54 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое Mini App</title>
+    <title>HUSS COFFEE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Подключаем красивый шрифт -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* Меняем шрифт на более современный */
+        /* --- 1. ФОН И ОСНОВА --- */
         body { 
             font-family: 'Montserrat', -apple-system, sans-serif; 
-            background: var(--tg-theme-bg-color, #FAFAFA); 
-            color: var(--tg-theme-text-color, #222);
+            /* Ставим фоновую картинку с кофе */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=1080&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
             padding: 15px; 
             margin: 0;
         }
-        h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 25px; letter-spacing: -0.5px; }
-        
+
+        /* --- 2. ЗАГОЛОВОК И ДЫМОК --- */
+        .header-container {
+            text-align: center;
+            margin: 30px 0 40px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2; /* Чтобы текст был поверх дыма */
+        }
+
+        .text-huss { color: #8B5A2B; /* Наш кофейный цвет */ }
+        .text-coffee { color: #ffffff; }
+
+        /* Контейнер для дыма, ставим его ровно над словом COFFEE */
+        .smoke-container {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 60px;
+            z-index: 1;
+        }
+
+        /* Сам дымок (CSS-анимация) */
+        .smoke {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: rgba(200, 200, 200, 0.5); /* Серый полупрозрачный */
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: rise 3s infinite ease-in;
+        }
+
+        /* Запускаем несколько клубов дыма с разной задержкой */
+        .smoke:nth-child(1) { animation-delay: 0s; left: 40%; }
+        .smoke:nth-child(2) { animation-delay: 1s; left: 55%; }
+        .smoke:nth-child(3) { animation-delay: 2s; left: 45%; }
+
+        @keyframes rise {
+            0% { transform: translate(-50%, 0) scale(1); opacity: 0.6; }
+            100% { transform: translate(-50%, -50px) scale(2.5); opacity: 0; }
+        }
+
+        /* --- 3. КАТАЛОГ (КАРТОЧКИ) --- */
         .catalog { display: flex; flex-direction: column; gap: 15px; }
         
-        /* Карточка стала более стильной */
+        /* Эффект стекла (Glassmorphism), чтобы фон просвечивал */
         .card { 
-            background: var(--tg-theme-secondary-bg-color, #ffffff); 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 18px; 
             padding: 12px; 
             display: flex; 
             align-items: center; 
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .info { display: flex; align-items: center; gap: 15px; }
         
-        /* Стили для реальных фото вместо эмодзи */
         .product-img {
             width: 65px;
             height: 65px;
             border-radius: 12px;
-            object-fit: cover; /* Чтобы фото не сплющивалось */
+            object-fit: cover; 
         }
         
-        .details h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; }
-        .details p { margin: 0; font-size: 13px; color: #888; }
+        .details h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; color: #fff; }
+        .details p { margin: 0; font-size: 13px; color: #ccc; }
         
-        .price { font-weight: 700; font-size: 16px; margin-right: 12px; color: #8B5A2B; /* Кофейный цвет */ }
+        .price { font-weight: 700; font-size: 16px; margin-right: 12px; color: #d4a373; /* Светло-коричневый для контраста */ }
         
-        /* Кнопка плюса */
         .add-btn { 
-            background: #8B5A2B; /* Кофейный цвет */ 
+            background: #8B5A2B; 
             color: #fff; 
             border: none; 
             border-radius: 50%; 
@@ -60,35 +120,37 @@
             font-weight: bold;
             cursor: pointer; 
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 3px 8px rgba(139, 90, 43, 0.3);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
         
+        /* --- 4. КОРЗИНА --- */
         .cart { 
             margin-top: 30px; 
-            background: var(--tg-theme-secondary-bg-color, #ffffff); 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 18px; 
             padding: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .cart h3 { margin-top: 0; text-align: center; font-weight: 600; }
+        .cart h3 { margin-top: 0; text-align: center; font-weight: 600; color: #fff; }
         
         input { 
             width: 100%; 
             padding: 14px; 
             margin-bottom: 12px; 
             border-radius: 12px; 
-            border: 1px solid rgba(128, 128, 128, 0.2); 
-            background: var(--tg-theme-bg-color, #FAFAFA); 
-            color: var(--tg-theme-text-color, #000); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(0, 0, 0, 0.3); 
+            color: #fff; 
             box-sizing: border-box; 
             font-size: 15px;
             font-family: 'Montserrat', sans-serif;
         }
+        input::placeholder { color: #aaa; }
         
-        /* Главная кнопка оформления */
         .checkout-btn { 
-            background: #8B5A2B; /* Кофейный цвет */ 
+            background: #8B5A2B; 
             color: #fff; 
             border: none; 
             padding: 16px; 
@@ -97,18 +159,30 @@
             font-size: 16px; 
             font-weight: 700; 
             margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             font-family: 'Montserrat', sans-serif;
         }
     </style>
 </head>
 <body>
-    <h1>☕ Меню кофейни</h1>
+    
+    <!-- Заголовок с дымом -->
+    <div class="header-container">
+        <div class="smoke-container">
+            <div class="smoke"></div>
+            <div class="smoke"></div>
+            <div class="smoke"></div>
+        </div>
+        <h1>
+            <span class="text-huss">HUSS</span><br>
+            <span class="text-coffee">COFFEE</span>
+        </h1>
+    </div>
     
     <div class="catalog" id="catalog"></div>
     
     <div class="cart">
-        <h3>Ваш заказ: <span id="total-price" style="color: #8B5A2B;">0</span> ₽</h3>
+        <h3>Ваш заказ: <span id="total-price" style="color: #d4a373;">0</span> ₽</h3>
         <input type="text" id="client-name" placeholder="Ваше имя">
         <input type="tel" id="client-phone" placeholder="Телефон или столик">
         <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
@@ -121,29 +195,10 @@
         const BOT_TOKEN = "8717110711:AAEYx8S8dnn6103TmdT8xh2SEaGPgAw71Ao";
         const MY_CHAT_ID = "7948923802";
 
-        // ⚠️ Обрати внимание: теперь вместо emoji мы используем img (ссылки на фото)
         const products = [
-            { 
-                id: 1, 
-                name: "Капучино", 
-                desc: "Нежная пенка", 
-                price: 200, 
-                img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=200&auto=format&fit=crop" 
-            },
-            { 
-                id: 2, 
-                name: "Круассан", 
-                desc: "С маслом", 
-                price: 150, 
-                img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=200&auto=format&fit=crop" 
-            },
-            { 
-                id: 3, 
-                name: "Латте", 
-                desc: "С сиропом", 
-                price: 250, 
-                img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=200&auto=format&fit=crop" 
-            }
+            { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=200&auto=format&fit=crop" },
+            { id: 2, name: "Круассан", desc: "С маслом", price: 150, img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=200&auto=format&fit=crop" },
+            { id: 3, name: "Латте", desc: "С сиропом", price: 250, img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=200&auto=format&fit=crop" }
         ];
 
         let cartTotal = 0;
@@ -198,7 +253,7 @@
             fetch(url)
                 .then(response => {
                     if (response.ok) {
-                        if (tg) tg.showAlert('Заказ успешно отправлен! Мы скоро свяжемся.'); else alert('Заказ отправлен (тест в браузере)!');
+                        if (tg) tg.showAlert('Заказ отправлен!'); else alert('Заказ отправлен!');
                         if (tg) tg.HapticFeedback.notificationOccurred('success');
                         cartTotal = 0;
                         cartItems = [];
