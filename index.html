@@ -37,9 +37,9 @@
         tg.ready();
         tg.expand();
 
-        // ⚠️ ВСТАВЬ СЮДА СВОИ ДАННЫЕ ИЗ ШАГА 1 ⚠️
-        const BOT_TOKEN = 8717110711:AAEYx8S8dnn6103TmdT8xh2SEaGPgAw71Ao
-        const MY_CHAT_ID = 7948923802
+        // Вставлены твои реальные данные
+        const BOT_TOKEN = "8717110711:AAEYx8S8dnn6103TmdT8xh2SEaGPgAw71Ao";
+        const MY_CHAT_ID = "7948923802";
 
         const products = [
             { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, emoji: "☕" },
@@ -95,7 +95,6 @@
 
             const orderText = `🔥 НОВЫЙ ЗАКАЗ!\n\n👤 Имя: ${name}\n📞 Контакт: ${phone}\n\n🍔 Состав: ${cartItems.join(', ')}\n💰 Итого: ${cartTotal} ₽`;
 
-            // Отправляем сообщение в Telegram
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_CHAT_ID}&text=${encodeURIComponent(orderText)}`;
 
             fetch(url)
@@ -103,7 +102,6 @@
                     if (response.ok) {
                         if (tg) tg.showAlert('Заказ успешно отправлен! Мы скоро свяжемся.');
                         tg.HapticFeedback.notificationOccurred('success');
-                        // Сбрасываем
                         cartTotal = 0;
                         cartItems = [];
                         document.getElementById('total-price').innerText = cartTotal;
