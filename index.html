@@ -34,42 +34,57 @@
             color: var(--tg-theme-button-text-color, #fff); 
             border: none; 
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: 35px; height: 35px;
             font-size: 20px;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
         }
+        
         .cart { 
             margin-top: 25px; 
             background: var(--tg-theme-secondary-bg-color, #ffffff); 
             border-radius: 14px; 
             padding: 20px; 
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
+        .cart h3 { margin-top: 0; text-align: center; }
+        
+        /* Поля ввода */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(128, 128, 128, 0.2);
+            background: var(--tg-theme-bg-color, #f4f4f5);
+            color: var(--tg-theme-text-color, #000);
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
         .checkout-btn { 
-            background: var(--tg-theme-button-color, #34C759); 
-            color: white; 
+            background: var(--tg-theme-button-color, #2481cc); 
+            color: var(--tg-theme-button-text-color, #fff); 
             border: none; 
             padding: 15px; 
             border-radius: 10px; 
             width: 100%; 
             font-size: 16px; 
             font-weight: bold; 
-            margin-top: 15px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>☕ Меню кофейни</h1>
 
-    <div class="catalog" id="catalog">
-        <!-- Товары будут добавляться сюда через JS -->
-    </div>
+    <div class="catalog" id="catalog"></div>
 
     <div class="cart">
         <h3>Ваш заказ: <span id="total-price">0</span> ₽</h3>
+        
+        <!-- Поля для ввода -->
+        <input type="text" id="client-name" placeholder="Ваше имя">
+        <input type="tel" id="client-phone" placeholder="Телефон или столик">
+        
         <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
     </div>
 
@@ -78,7 +93,6 @@
         tg.ready();
         tg.expand();
 
-        // 1. Наш список товаров (в будущем это будет приходить из базы данных)
         const products = [
             { id: 1, name: "Капучино", desc: "Нежная пенка", price: 200, emoji: "☕" },
             { id: 2, name: "Круассан", desc: "С маслом", price: 150, emoji: "🥐" },
@@ -86,8 +100,8 @@
         ];
 
         let cartTotal = 0;
+        let cartItems = []; // Здесь будем хранить названия заказанных товаров
 
-        // 2. Отрисовываем карточки на экране
         const catalogDiv = document.getElementById('catalog');
         
         products.forEach(product => {
@@ -103,31 +117,47 @@
                 </div>
                 <div style="display: flex; align-items: center;">
                     <div class="price">${product.price} ₽</div>
-                    <button class="add-btn" onclick="addToCart(${product.price})">+</button>
+                    <button class="add-btn" onclick="addToCart(${product.id})">+</button>
                 </div>
             `;
             catalogDiv.appendChild(card);
         });
 
-        // 3. Логика добавления в корзину
-        window.addToCart = function(price) {
-            cartTotal += price;
+        window.addToCart = function(id) {
+            const product = products.find(p => p.id === id);
+            cartTotal += product.price;
+            cartItems.push(product.name);
             document.getElementById('total-price').innerText = cartTotal;
-            if (tg) tg.HapticFeedback.impactOccurred('light'); // Легкая вибрация
+            if (tg) tg.HapticFeedback.impactOccurred('light');
         };
 
-        // 4. Оформление заказа
         document.getElementById('checkout-btn').addEventListener('click', () => {
             if (cartTotal === 0) {
                 if (tg) tg.showAlert('Вы ничего не выбрали!');
                 return;
             }
+
+            const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+
+            if (!name || !phone) {
+                if (tg) tg.showAlert('Пожалуйста, заполните имя и контакт!');
+                return;
+            }
+
+            // Здесь мы формируем текст заказа
+            const orderText = `Заказ для: ${name}\nКонтакт: ${phone}\n\nСостав: ${cartItems.join(', ')}\nИтого: ${cartTotal} ₽`;
+
             if (tg) {
-                tg.showAlert(`Заказ на сумму ${cartTotal} ₽ оформлен! (В будущем это улетит в бот владельцу)`);
+                tg.showAlert(orderText + '\n\n(В будущем этот текст прилетит вам в бот!)');
                 tg.HapticFeedback.notificationOccurred('success');
-                // Сбрасываем корзину
+                
+                // Сбрасываем после заказа
                 cartTotal = 0;
+                cartItems = [];
                 document.getElementById('total-price').innerText = cartTotal;
+                document.getElementById('client-name').value = '';
+                document.getElementById('client-phone').value = '';
             }
         });
     </script>
